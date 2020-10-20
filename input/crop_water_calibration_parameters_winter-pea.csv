@@ -1,8 +1,8 @@
 param.name,param.min,param.max,sig.level,calibrate,old.winner
-cropRootDiameter,0.0001,0.1,0.001,TRUE,0.005
-cropRootConductivity,0.0000001,0.00001,0.0000001,TRUE,0.00001
-cropAlpha,0.1,0.5,0.01,TRUE,0.2
-cropMinTranspirationPotential,-40000,-20000,1000,TRUE,-27000
-cropMaxTranspirationPotential,-20000,-1000,1000,TRUE,-2000
-cropBufferPotential,0.01,1,0.01,TRUE,0.05
-cropLongitudinalResistantFactor,50,3000,10,TRUE,50
+cropRootDiameter,0.002,0.1,0.001,FALSE,0.077
+cropRootConductivity,0.00000001,0.000001,0.00000002,FALSE,0.000008
+cropAlpha,0.05,0.3,0.01,TRUE,0.18
+cropMinTranspirationPotential,-100000,-30000,5000,TRUE,-26500
+cropBufferPotential,0.2,2,0.1,FALSE,0.91
+cropLongitudinalResistantFactor,100,3000,100,FALSE,2100
+cropHarmonicWeightedMean,0.1,2,0.1,TRUE,1

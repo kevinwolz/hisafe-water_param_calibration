@@ -5,6 +5,6 @@
 #SBATCH --mail-user=wolzkevin@gmail.com
 module purge
 module load load cv-standard
-module load load R/3.4.3 
-cd /lustre/lecomtei/water_calib_GA1
+module load load R/4.0.2 
+cd /lustre/lecomtei/hisafe-water_param_calibration
 Rscript water_calib_GA.R

@@ -3,7 +3,12 @@
 
 read_profiles <- function(path, profile, hisafe = TRUE) {
   profile.files <- list.files(path, pattern = paste0(profile, "\\.txt"), full.names = TRUE, recursive = TRUE)
-  out <- purrr::map_df(profile.files, read.table, header = TRUE, stringsAsFactors = FALSE) %>%
+  out <- purrr::map_df(profile.files, read.table,
+                       header           = TRUE,
+                       sep              = "\t",
+                       stringsAsFactors = FALSE,
+                       na.strings       = c("NA", "error!", "NaN", "-9999", "Infinity"),
+                       encoding         = "latin1") %>%
     dplyr::as_tibble()
 
   if(hisafe) {
@@ -40,8 +45,6 @@ round_params <- function(params) {
   for(i in 1:length(params)){
     params[i] <- round(params[i] / PARAMS$sig.level[i]) * PARAMS$sig.level[i]
   }
-
-  if(params[5] < params[4]) params[5] <- min(0, params[4] + 1000)
 
   return(params)
 }
@@ -82,7 +85,7 @@ write_script <- function(ids) {
   write_line(paste0("sh capsis.sh -p script safe.pgms.ScriptGen ",
                     gen.folder,
                     "gen_", GEN, "-$SLURM_ARRAY_TASK_ID", "/",
-                    "gen_", GEN, "-$SLURM_ARRAY_TASK_ID.sim water_calib"))
+                    "gen_", GEN, "-$SLURM_ARRAY_TASK_ID.sim water_calib_defaults"))
   close(batch.script)
 }
 

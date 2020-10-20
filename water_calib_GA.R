@@ -2,25 +2,20 @@
 ### Author: Kevin J. Wolz
 
 GA.id <- 1
-CROP <- "rape" #c("durum-wheat-restinclieres", "weed-restinclieres", "rape", "winter-pea")
-PATH <- paste0("/lustre/lecomtei/water_calib_GA", GA.id, "/")
-#PATH <- "~/Desktop/RESEARCH/ACTIVE_PROJECTS/HI-SAFE/hisafe-calibration/water_calib_GA1/"
-
-log.file <- file(description = paste0(PATH, "GA", GA.id, "_", CROP, ".log"),
-                 open        = "wb",
-                 encoding    = "UTF-8")
+CROP <- "durum-wheat-restinclieres" #c("durum-wheat-restinclieres", "weed-restinclieres", "rape", "winter-pea")
+PATH <- "/lustre/lecomtei/hisafe-water_param_calibration/"
+#PATH <- "./"
 
 ##### USER PARAMETERS #####
 source(paste0(PATH, "water_calib_GA_functions.R"))
-write_log(paste0("INITIALIZING GA", GA.id))
 
 input.path    <- paste0(PATH, "input/")
-output.path   <- paste0(PATH, CROP, "/output/")
-gen.path      <- paste0(PATH, CROP, "/generations/")
-template.path <- paste0(PATH, "templates/", CROP, "/")
+run.path      <- paste0(PATH, "output", GA.id, "/")
+output.path   <- paste0(run.path, CROP, "/")
+gen.path      <- paste0(output.path, "generations/")
+template.path <- paste0(run.path, "templates/", CROP, "/")
 
-dir.create(output.path, recursive = TRUE, showWarnings = FALSE)
-dir.create(gen.path,    recursive = TRUE, showWarnings = FALSE)
+dir.create(gen.path, recursive = TRUE, showWarnings = FALSE)
 
 library(dplyr)
 library(tidyr)
@@ -32,6 +27,11 @@ library(stringr)
 library(ecr)
 
 ##### GA CONTROL PARAMETERS #####
+log.file <- file(description = paste0(PATH, "GA", GA.id, "_", CROP, ".log"),
+                 open        = "wb",
+                 encoding    = "UTF-8")
+write_log(paste0("INITIALIZING GA", GA.id))
+
 MU       <- 70L
 MAX.SIZE <- Inf
 MAX.GEN  <- 100L
@@ -94,7 +94,7 @@ write_line("#SBATCH --mail-user=wolzkevin@gmail.com")
 write_line("module purge")
 write_line("module load jre/jre.8_x64")
 write_line("cd /nfs/work/hisafe/Capsis4")
-write_line(paste0("sh capsis.sh -p script safe.pgms.ScriptGen ", output.path, "stics/stics.sim water_calib"))
+write_line(paste0("sh capsis.sh -p script safe.pgms.ScriptGen ", output.path, "stics/stics.sim water_calib_defaults"))
 close(batch.script)
 
 system(paste0("sbatch ", output.path, "stics.sh"))
@@ -146,7 +146,7 @@ write_line("#SBATCH --mail-user=wolzkevin@gmail.com")
 write_line("module purge")
 write_line("module load jre/jre.8_x64")
 write_line("cd /nfs/work/hisafe/Capsis4")
-write_line(paste0("sh capsis.sh -p script safe.pgms.ScriptGen ", output.path, "hisafe-old/hisafe-old.sim water_calib"))
+write_line(paste0("sh capsis.sh -p script safe.pgms.ScriptGen ", output.path, "hisafe-old/hisafe-old.sim water_calib_defaults"))
 close(batch.script)
 
 system(paste0("sbatch ", output.path, "hisafe-old.sh"))

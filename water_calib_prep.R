@@ -2,19 +2,18 @@
 ### Author: Kevin J. Wolz
 
 library(hisafer)
+library(tidyverse)
 
 GA.id <- 1
-YEARS <- 2007:2008
+YEARS <- 2004:2006
 REFERENCE.PROFILES <- c("cells", "voxels", "plot", "cellsDetail")
+CROPS <- c("durum-wheat-restinclieres", "weed-restinclieres", "rape", "winter-pea")
+input.path <- "./input/"
 
-for(CROP in c("durum-wheat-restinclieres", "weed-restinclieres", "rape", "winter-pea")) {
+for(CROP in CROPS) {
 
-  PARAMS <- readr::read_csv(paste0(input.path, "crop_water_calibration_parameters_", CROP, ".csv"), col_types = readr::cols()) %>%
-    dplyr::filter(calibrate == TRUE) %>%
-    dplyr::select(-calibrate)
-
-
-  PREP.PATH <- paste0("./water_calib_GA", GA.id, "/templates/", CROP)
+  PREP.PATH <- paste0("./output", GA.id, "/templates/", CROP)
+  dir.create(PREP.PATH, showWarnings = FALSE, recursive = TRUE)
 
   common.params <- list(nbSimulations        = length(YEARS),
                         waterTable           = 0,
@@ -46,7 +45,13 @@ for(CROP in c("durum-wheat-restinclieres", "weed-restinclieres", "rape", "winter
   build_hisafe(hip, plot.scene = FALSE, summary.files = FALSE, files = c("sim", "plt", "par"))
 
   ##### OLD HISAFE SIMULATION #####
-  old.params <- as.list(PARAMS$old.winner)
+  PARAMS <- readr::read_csv(paste0(input.path, "crop_water_calibration_parameters_", CROP, ".csv"), col_types = readr::cols()) %>%
+    dplyr::select(-calibrate)
+
+  old.params <- PARAMS %>%
+    .$old.winner %>%
+    as.list()
+
   names(old.params) <- PARAMS$param.name
 
   hip <- define_hisafe(path                 = PREP.PATH,
@@ -58,3 +63,16 @@ for(CROP in c("durum-wheat-restinclieres", "weed-restinclieres", "rape", "winter
                        bulk.pass            = c(common.params, old.params))
   build_hisafe(hip, plot.scene = FALSE, summary.files = FALSE, files = c("sim", "plt", "par"))
 }
+
+##### DEFAULTS #####
+hip <- define_hisafe(path                 = ".",
+                     template             = "monocrop",
+                     profiles             = c(REFERENCE.PROFILES, "voxelsOptim"),
+                     SimulationName       = "water_calib_defaults",
+                     bulk.pass            =  list(waterTable           = 0,
+                                                  nbSimulations        = length(CROPS),
+                                                  mainCropSpecies      = list(paste0(CROPS, ".plt")), # just used to get the .plt files into the defaults
+                                                  mainCropItk          = list(paste0(CROPS, ".tec")), # just used to get the .tec files into the defaults
+                                                  layers               = layer_params(template = "monocrop",
+                                                                                      thick = c(0.4, 0.4, 0.6, 0.6))))
+build_hisafe(hip, plot.scene = FALSE, summary.files = FALSE, files = c("pld", "wth", "pro", "tec"))
