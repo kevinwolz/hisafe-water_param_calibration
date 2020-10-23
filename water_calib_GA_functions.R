@@ -226,12 +226,17 @@ crop_water_GA_fitness <- function(population) {
   best.data <- joined.data %>%
     dplyr::left_join(OLD.WINNER, by = c("Date", "z")) %>%
     dplyr::filter(id == best.id) %>%
+    dplyr::filter(Date %in% GROWTH.DATES) %>%
     tidyr::gather(hisafe, stics, old.winner, key = "sim", value = "waterUptake") %>%
     dplyr::mutate(Date = lubridate::dmy(Date))
 
+  best.data$season <- 2004
+  best.data$season[which(best.data$Date >= lubridate::dmy("1/10/2004"))] <- 2005
+  best.data$season[which(best.data$Date >= lubridate::dmy("1/10/2005"))] <- 2006
+
   best.plot <- ggplot(best.data, aes(x = Date, y = waterUptake, color = sim)) +
     ggplot2::labs(x = "Date", y = "Water uptake", color = NULL) +
-    ggplot2::facet_wrap(~z, ncol = 1) +
+    ggplot2::facet_grid(z~season, scales = "free_x") +
     ggplot2::geom_line() +
     ggplot2::scale_color_manual(values = c("green", "red", "black"))
   dum <- ggsave_fitmax(paste0(output.path, "Best_Offspring_Comp_", GEN, ".pdf"), best.plot)
