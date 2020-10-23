@@ -1,7 +1,7 @@
 #!/bin/sh
 #SBATCH --account=hisafe
 #SBATCH --partition=defq
-#SBATCH --mail-type=ALL
+#SBATCH --mail-type=NONE
 #SBATCH --mail-user=wolzkevin@gmail.com
 module purge
 module load load cv-standard
