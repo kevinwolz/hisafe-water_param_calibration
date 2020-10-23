@@ -74,7 +74,7 @@ write_script <- function(ids) {
                        encoding    = "UTF-8")
   cat("", file = batch.script, sep = "", append = FALSE)
   write_line("#!/bin/sh")
-  write_line(paste0("#SBATCH --array=", min(ids), "-", max(ids)))
+  write_line(paste0("#SBATCH --array=", min(ids), "-", max(ids), "%28"))
   write_line("#SBATCH --account=hisafe")
   write_line("#SBATCH --partition=defq")
   #write_line("#SBATCH --account=f_meso")
