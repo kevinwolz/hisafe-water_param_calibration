@@ -5,7 +5,7 @@ library(hisafer)
 library(tidyverse)
 
 GA.id <- 1
-YEARS <- 2004:2006
+YEARS <- 2003:2005
 REFERENCE.PROFILES <- c("cells", "voxels", "plot", "cellsDetail")
 CROPS <- c("durum-wheat-restinclieres", "weed-restinclieres", "rape", "winter-pea")
 input.path <- "./input/"
