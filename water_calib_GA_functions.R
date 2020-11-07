@@ -152,7 +152,7 @@ crop_water_GA_fitness <- function(population) {
   ### EDIT CROP PARAMETERS
   write_log("----- edit crop parameters")
   purrr::walk2(ids,
-               as.list(as.data.frame(t(matrix(pop[ids,], byrow = FALSE, nrow = length(ids))))),
+               split(as.matrix(pop[ids,]), seq(nrow(pop[ids,]))),
                edit_crop_parameters)
 
   ### CREATE BATCH FILE
