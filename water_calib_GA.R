@@ -163,7 +163,7 @@ while(incomplete) {
   if(complete) incomplete <- FALSE
 }
 
-old.winner.voxels <- read_profiles(paste0(output.path, "hisafe-old"), "voxelsOptim", hisafe = FALSE)
+old.winner.voxels <- read_profiles(paste0(output.path, "hisafe-old"), "voxels", hisafe = FALSE)
 
 OLD.WINNER <- old.winner.voxels %>%
   dplyr::filter(Date %in% GROWTH.DATES) %>%
