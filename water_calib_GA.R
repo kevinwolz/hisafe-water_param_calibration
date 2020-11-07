@@ -24,6 +24,7 @@ library(viridis)
 library(readr)
 library(purrr)
 library(stringr)
+library(GGally)
 library(ecr)
 
 ##### GA CONTROL PARAMETERS #####
@@ -267,6 +268,9 @@ for(GEN in seq_len(MAX.GEN)) {
       ggplot2::geom_line(aes(y = n),   color = "black", linetype = "solid",  size = 1) +
       ggplot2::theme_bw()
     dum <- ggsave_fitmax(paste0(output.path, "GA_pareto_archive_size.pdf"), pareto.size.plot)
+
+    pareto.pairs.plot <- GGally::ggpairs(pareto.params)
+    dum <- ggplot2::ggsave(paste0(output.path, "GA_pareto_param_pairs_plot_", GEN, ".png"), pareto.pairs.plot)
 
     hist.data <- pareto.params %>%
       tidyr::gather(key = "param")
