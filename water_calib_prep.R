@@ -46,6 +46,7 @@ for(CROP in CROPS) {
 
   ##### OLD HISAFE SIMULATION #####
   PARAMS <- readr::read_csv(paste0(input.path, "crop_water_calibration_parameters_", CROP, ".csv"), col_types = readr::cols()) %>%
+    dplyr::filter(calibrate == TRUE) %>%
     dplyr::select(-calibrate)
 
   old.params <- PARAMS %>%
