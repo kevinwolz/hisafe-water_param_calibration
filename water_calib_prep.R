@@ -6,7 +6,7 @@ library(tidyverse)
 
 GA.id <- 1
 YEARS <- 2003:2005
-REFERENCE.PROFILES <- c("cells", "voxels", "plot", "cellsDetail")
+REFERENCE.PROFILES <- c("cells", "voxels", "plot", "cellsDetail", "climate")
 CROPS <- c("durum-wheat-restinclieres", "weed-restinclieres", "rape", "winter-pea")
 input.path <- "./input/"
 
@@ -56,7 +56,7 @@ for(CROP in CROPS) {
 
   hip <- define_hisafe(path                 = PREP.PATH,
                        template             = "monocrop",
-                       profiles             = "voxelsOptim",
+                       profiles             = REFERENCE.PROFILES,
                        SimulationName       = "hisafe-old",
                        sticsWaterExtraction = 0,
                        laiFileName          = "lai.obs",
