@@ -218,6 +218,35 @@ crop_water_GA_fitness <- function(population) {
   write_log("----- write out population data")
   readr::write_csv(dat, paste0(output.path, "GA_data_", GEN, ".csv"))
 
+  ## PLOT ALL SIMULATIONS FROM THIS GENERATION
+  test.dat <- joined.data %>%
+    dplyr::mutate(Date = lubridate::dmy(Date)) %>%
+    dplyr::mutate(Month = lubridate::month(Date)) %>%
+    dplyr::filter(Month >= 4, Month <= 6) %>%
+    dplyr::group_by(gen, id, Date) %>%
+    dplyr::summarize(hisafe = sum(hisafe),
+                     stics  = sum(stics))
+
+  test.dat$season <- 2004
+  test.dat$season[which(test.dat$Date >= lubridate::dmy("1/10/2004"))] <- 2005
+  test.dat$season[which(test.dat$Date >= lubridate::dmy("1/10/2005"))] <- 2006
+
+  stics.ref <- test.dat %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(id == 1) %>%
+    dplyr::select(-gen, -id, -hisafe)
+
+  pop.comp.plot <- ggplot(test.dat, aes(x = Date, y = hisafe, color = factor(id), group = id)) +
+    facet_wrap(~season, ncol = 1, scales = "free_x") +
+    geom_line(size = 0.5) +
+    guides(color = FALSE) +
+    labs(y = "cropWaterUptake") +
+    geom_line(data = stics.ref, aes(x = Date, y = stics),
+              inherit.aes = FALSE, color = "black") +
+    theme_bw()
+  dum <- ggsave_fitmax(paste0(output.path, "Population_Comp_", GEN, ".pdf"), pop.comp.plot)
+
+
   ## PLOT BEST SOLUTION FROM THIS GENERATION
   best.id <- dat.vol %>%
     dplyr::select(-gen, -id) %>%
@@ -225,18 +254,30 @@ crop_water_GA_fitness <- function(population) {
     apply(1, prod) %>%
     which.min()
 
-  best.data <- joined.data %>%
+  best.data.all.layers <- joined.data %>%
     dplyr::left_join(OLD.WINNER, by = c("Date", "z")) %>%
     dplyr::filter(id == best.id) %>%
     dplyr::filter(Date %in% GROWTH.DATES) %>%
     tidyr::gather(hisafe, stics, old.winner, key = "sim", value = "waterUptake") %>%
     dplyr::mutate(Date = lubridate::dmy(Date))
 
-  best.data$season <- 2004
-  best.data$season[which(best.data$Date >= lubridate::dmy("1/10/2004"))] <- 2005
-  best.data$season[which(best.data$Date >= lubridate::dmy("1/10/2005"))] <- 2006
+  best.data.all.layers$season <- 2004
+  best.data.all.layers$season[which(best.data.all.layers$Date >= lubridate::dmy("1/10/2004"))] <- 2005
+  best.data.all.layers$season[which(best.data.all.layers$Date >= lubridate::dmy("1/10/2005"))] <- 2006
 
-  best.plot <- ggplot(best.data, aes(x = Date, y = waterUptake, color = sim)) +
+  best.data <- best.data.all.layers %>%
+    dplyr::filter(z <= 0.9)
+
+  best.total <- best.data.all.layers %>%
+    dplyr::group_by(gen, id, Date, sim, season) %>%
+    dplyr::summarize(waterUptake = sum(waterUptake)) %>%
+    dplyr::mutate(z = "total")
+
+  best.data.all <- best.data %>%
+    dplyr::mutate(z = as.character(z)) %>%
+    dplyr::bind_rows(best.total)
+
+  best.plot <- ggplot(best.data.all, aes(x = Date, y = waterUptake, color = sim)) +
     ggplot2::labs(x = "Date", y = "Water uptake", color = NULL) +
     ggplot2::facet_grid(z~season, scales = "free_x") +
     ggplot2::geom_line() +
