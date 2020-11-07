@@ -187,10 +187,10 @@ crop_water_GA_fitness <- function(population) {
   write_log("----- calculate fitness")
 
   joined.data <- HISAFE %>%
-    dplyr::left_join(STICS, by = c("Date", "z")) %>%
-    dplyr::filter(z <= MAX.DEPTH)
+    dplyr::left_join(STICS, by = c("Date", "z"))
 
   layer.rmse <- joined.data %>%
+    dplyr::filter(z <= MAX.DEPTH) %>%
     dplyr::mutate(sqdif = (hisafe - stics) ^ 2) %>%
     dplyr::group_by(gen, id, z) %>%
     dplyr::summarize(rmse = sqrt(mean(sqdif))) %>%

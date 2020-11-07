@@ -38,7 +38,7 @@ MAX.SIZE <- Inf
 MAX.GEN  <- 100L
 P.RECOMB <- 0.7
 P.MUT    <- 0.2
-MAX.DEPTH <- 0.7 #1.1 #2.5 #
+MAX.DEPTH <- 0.9 #1.1 #2.5 #
 NUM.DEPTHS <- ((MAX.DEPTH - 0.1) / 0.2) + 1
 ROUND <- FALSE
 
